@@ -21,9 +21,11 @@
     "ext-imagick": "*",
     "ext-curl": "*",
     "slim/slim": "^3.9.2",
+    "akrabat/rka-ip-address-middleware": "^0.5",
     "phpfastcache/phpfastcache": "~6.0",
     "imagine/imagine": "^0.7.1",
-    "monolog/monolog": "^1.23.0"
+    "monolog/monolog": "^1.23.0",
+    "hassankhan/config": "^0.11.2"
   },
   "require-dev": {
     "phpunit/phpunit": "~6.3"

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="FTP.6" autoUploadExternalChanges="true">
+  <component name="PublishConfigData" autoUpload="Always" serverName="Angular.34" autoUploadExternalChanges="true">
     <serverData>
       <paths name="Angular.34">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/image-web-tool" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
