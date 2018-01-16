@@ -18,16 +18,14 @@
   "prefer-stable": true,
   "require": {
     "php": ">=7.0",
-    "ext-imagick":"*",
+    "ext-imagick": "*",
     "ext-curl": "*",
     "slim/slim": "^3.9.2",
     "phpfastcache/phpfastcache": "~6.0",
-    "imagine/imagine":"^0.7.1"
-
+    "imagine/imagine": "^0.7.1",
+    "monolog/monolog": "^1.23.0"
   },
   "require-dev": {
-    "mrcnpdlk/monolog": "~0",
-
     "phpunit/phpunit": "~6.3"
   },
   "autoload": {
