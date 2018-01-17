@@ -14,9 +14,10 @@ namespace mrcnpdlk\ImageWebTool;
  */
 class Params
 {
-    const C_SCALE = 'scale';
-    const C_FIT   = 'fit';
-    const C_FILL  = 'fill';
+    const C_SCALE      = 'scale';
+    const C_FIT        = 'fit';
+    const C_FIT_MARGIN = 'fit-margin';
+    const C_FILL       = 'fill';
 
     const E_GAMMA     = 'g';
     const E_NEGATIVE  = 'n';
@@ -45,6 +46,8 @@ class Params
      * FIT - The image is resized so that it takes up as much space
      * as possible within a bounding box defined by the given width and height parameters. The original aspect ratio is retained and all of
      * the original image is visible
+     *
+     * FIT-MARGIN - Like FIT, but image is increased to required dimension by additional margins (u+down or left+right)
      *
      * FILL  - Create an image with the exact given width and height while retaining the original aspect ratio, using only part of the
      * image that fills the given dimensions if necessary (only part of the original image might be visible if the requested aspect ratio
@@ -106,6 +109,60 @@ class Params
     }
 
     /**
+     * @param string $hexColor
+     *
+     * @return string
+     */
+    private static function parseHexColor(string $hexColor)
+    {
+        $hexColor = ltrim($hexColor, '#');
+        $len      = strlen($hexColor);
+        if ($len < 3) {
+            $hexColor = str_pad($hexColor, 3, '0', \STR_PAD_RIGHT);
+        } elseif ($len > 3 && $len < 6) {
+            $hexColor = str_pad($hexColor, 6, '0', \STR_PAD_RIGHT);
+        } elseif ($len > 6) {
+            $hexColor = substr($hexColor, 0, 6);
+        }
+
+        return '#' . $hexColor;
+    }
+
+    /**
+     * @param $name
+     *
+     * @return string
+     */
+    protected function getCamelCaseName($name): string
+    {
+        return str_replace(
+            ' ', '', ucwords(str_replace(['_', '-'], ' ', $name))
+        );
+    }
+
+    /**
+     * @param string $format
+     *
+     * @return array
+     */
+    public function getQuality(string $format = 'jpg'): array
+    {
+        $answer = [];
+        switch (strtolower($format)) {
+            case 'jpg':
+            case 'jpeg':
+                $q = ['jpeg_quality' => $this->q];
+                break;
+            case 'png':
+                break;
+            default:
+                break;
+        }
+
+        return array_merge($q) ?? [];
+    }
+
+    /**
      * @param string $key
      * @param        $value
      *
@@ -125,15 +182,13 @@ class Params
     }
 
     /**
-     * @param $name
-     *
-     * @return string
+     * @param $value
      */
-    protected function getCamelCaseName($name): string
+    public function setBgc($value)
     {
-        return str_replace(
-            ' ', '', ucwords(str_replace(['_', '-'], ' ', $name))
-        );
+        if (null !== $value) {
+            $this->bgc = self::parseHexColor($value);
+        }
     }
 
     /**
@@ -144,6 +199,18 @@ class Params
     public function setC($value)
     {
         $this->c = strtolower((string)$value);
+
+        return $this;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return $this
+     */
+    public function setE($value)
+    {
+        $this->e = strtolower($value);
 
         return $this;
     }
@@ -163,6 +230,18 @@ class Params
     }
 
     /**
+     * @param $value
+     *
+     * @return $this
+     */
+    public function setR($value)
+    {
+        $this->r = (int)$value;
+
+        return $this;
+    }
+
+    /**
      * Width
      *
      * @param $value
@@ -177,60 +256,6 @@ class Params
     }
 
     /**
-     * @param $value
-     *
-     * @return $this
-     */
-    public function setR($value)
-    {
-        $this->r = (int)$value;
-
-        return $this;
-    }
-
-    /**
-     * @param $value
-     *
-     * @return $this
-     */
-    public function setE($value)
-    {
-        $this->e = strtolower($value);
-
-        return $this;
-    }
-
-    /**
-     * @param $value
-     */
-    public function setBgc($value)
-    {
-        if (null !== $value) {
-            $this->bgc = self::parseHexColor($value);
-        }
-    }
-
-    /**
-     * @param string $hexColor
-     *
-     * @return string
-     */
-    private static function parseHexColor(string $hexColor)
-    {
-        $hexColor = ltrim($hexColor, '#');
-        $len      = strlen($hexColor);
-        if ($len < 3) {
-            $hexColor = str_pad($hexColor, 3, '0', \STR_PAD_RIGHT);
-        } elseif ($len > 3 && $len < 6) {
-            $hexColor = str_pad($hexColor, 6, '0', \STR_PAD_RIGHT);
-        } else {
-            $hexColor = substr($hexColor, 0, 6);
-        }
-
-        return '#' . $hexColor;
-    }
-
-    /**
      * @return $this
      */
     public function standardize()
@@ -238,7 +263,7 @@ class Params
         if (null === $this->c) {
             if ($this->w && $this->h) {
                 $this->c = self::C_SCALE;
-            } else {
+            } elseif ($this->w || $this->h) {
                 $this->c = self::C_FIT;
             }
         }
@@ -273,27 +298,5 @@ class Params
         }
 
         return $this;
-    }
-
-    /**
-     * @param string $format
-     *
-     * @return array
-     */
-    public function getQuality(string $format = 'jpg'): array
-    {
-        $answer = [];
-        switch (strtolower($format)) {
-            case 'jpg':
-            case 'jpeg':
-                $q = ['jpeg_quality' => $this->q];
-                break;
-            case 'png':
-                break;
-            default:
-                break;
-        }
-
-        return array_merge($q) ?? [];
     }
 }

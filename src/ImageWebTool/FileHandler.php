@@ -9,7 +9,6 @@ namespace mrcnpdlk\ImageWebTool;
 
 
 use Imagine\Image\Box;
-use Imagine\Image\ImageInterface;
 use Imagine\Image\Palette\RGB;
 use Imagine\Imagick\Imagine;
 
@@ -24,11 +23,11 @@ class FileHandler
      */
     private $oParams;
     /**
-     * @var \Imagine\Image\ImageInterface|\Imagine\Imagick\Image
+     * @var \Imagine\Imagick\Image
      */
     private $oInputImg;
     /**
-     * @var \Imagine\Image\ImageInterface|\Imagine\Imagick\Image
+     * @var \Imagine\Imagick\Image
      */
     private $oOutputImg;
 
@@ -51,39 +50,9 @@ class FileHandler
             throw new Exception(sprintf('File [%s] not exists on storage or is not readable', $fileName));
         }
         $this->oInputImg  = (new Imagine())->open($filePath);
-        $this->oOutputImg = clone $this->oInputImg;
+        $this->oOutputImg = $this->oInputImg->copy();
         $this->setParams($params);
 
-    }
-
-    /**
-     * @param string $params
-     *
-     * @return $this
-     */
-    private function setParams(string $params = null)
-    {
-        $this->oParams = new Params($params);
-        $this->oParams->standardize();
-
-        return $this;
-    }
-
-    /**
-     * @param string|null $format
-     *
-     * @return string
-     */
-    public function getBlob(string $format = null): string
-    {
-        $format = $format ?? $this->oOutputImg->getImagick()->getImageFormat();
-
-        $this->effect();
-        $this->resize();
-        $this->rotate();
-
-        return $this->oOutputImg
-            ->get($format, $this->oParams->getQuality($format));
     }
 
     /**
@@ -119,32 +88,47 @@ class FileHandler
     }
 
     /**
+     * @param string|null $format
+     *
+     * @return string
+     */
+    public function getBlob(string $format = null): string
+    {
+        $format = $format ?? $this->oOutputImg->getImagick()->getImageFormat();
+
+        $this->effect();
+        $this->resize();
+        $this->rotate();
+
+        return $this->oOutputImg
+            ->get($format, $this->oParams->getQuality($format));
+    }
+
+    /**
      * @return $this
      */
     protected function resize()
     {
-        $origBox = $this->oInputImg->getSize();
-        $w       = $this->oParams->w ?? $origBox->getWidth();
-        $h       = $this->oParams->h ?? $origBox->getHeight();
-        $oBox    = new Box($w, $h);
+
         switch ($this->oParams->c) {
             case Params::C_SCALE:
+                $origBox = $this->oInputImg->getSize();
+                $w       = $this->oParams->w ?? $origBox->getWidth();
+                $h       = $this->oParams->h ?? $origBox->getHeight();
+                $oBox    = new Box($w, $h);
                 $this->oOutputImg->resize($oBox);
                 break;
-            case Params::C_FIT:
-                /**
-                 * @todo Problem with resize UP
-                 */
-                $this->oOutputImg = $this->oInputImg->thumbnail($oBox, ImageInterface::THUMBNAIL_INSET);
-                break;
+
             case Params::C_FILL:
-                /**
-                 * @todo Problem with resize UP
-                 */
-                $this->oOutputImg = $this->oInputImg->thumbnail($oBox, ImageInterface::THUMBNAIL_OUTBOUND);
+                $this->oOutputImg = Helper::resizeFill($this->oOutputImg, $this->oParams->w, $this->oParams->h);
                 break;
+            case Params::C_FIT_MARGIN:
+                $this->oOutputImg = Helper::resizeFit($this->oOutputImg, $this->oParams->w, $this->oParams->h);
+                $this->oOutputImg = Helper::addMargin($this->oOutputImg, $this->oParams->w, $this->oParams->h);
+                break;
+            case Params::C_FIT:
             default:
-                $this->oOutputImg = $this->oInputImg->thumbnail($oBox, ImageInterface::THUMBNAIL_INSET);
+                $this->oOutputImg = Helper::resizeFit($this->oOutputImg, $this->oParams->w, $this->oParams->h);
                 break;
         }
 
@@ -157,13 +141,28 @@ class FileHandler
     protected function rotate()
     {
         if ($this->oParams->r) {
+            $palette = new RGB();
             if ($this->oParams->bgc) {
-                $palette = new RGB();
                 $color   = $palette->color($this->oParams->bgc);
+            }else{
+                $color   = $palette->color('#FFF',0);
             }
-            $this->oOutputImg->rotate($this->oParams->r, $color ?? null);
+            $this->oOutputImg->rotate($this->oParams->r, $color);
         }
 
         return $this->oOutputImg;
+    }
+
+    /**
+     * @param string $params
+     *
+     * @return $this
+     */
+    private function setParams(string $params = null)
+    {
+        $this->oParams = new Params($params);
+        $this->oParams->standardize();
+
+        return $this;
     }
 }
