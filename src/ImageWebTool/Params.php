@@ -53,6 +53,12 @@ class Params
      * @var integer
      */
     public $q;
+    /**
+     * Rotate - angle in degrees
+     *
+     * @var integer
+     */
+    public $r;
 
     /**
      * Params constructor.
@@ -139,6 +145,18 @@ class Params
     public function setW($value)
     {
         $this->w = (int)$value;
+
+        return $this;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return $this
+     */
+    public function setR($value)
+    {
+        $this->r = (int)$value;
 
         return $this;
     }

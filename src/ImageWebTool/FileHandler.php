@@ -78,9 +78,10 @@ class FileHandler
         $format = $format ?? $this->oOutputImg->getImagick()->getImageFormat();
 
         $this->resize();
+        $this->rotate();
 
         return $this->oOutputImg
-            ->get($format,$this->oParams->getQuality($format));
+            ->get($format, $this->oParams->getQuality($format));
     }
 
     /**
@@ -114,5 +115,17 @@ class FileHandler
         }
 
         return $this;
+    }
+
+    /**
+     * @return \Imagine\Image\ImageInterface|\Imagine\Imagick\Image
+     */
+    protected function rotate()
+    {
+        if ($this->oParams->r) {
+            $this->oOutputImg->rotate($this->oParams->r);
+        }
+
+        return $this->oOutputImg;
     }
 }
