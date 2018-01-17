@@ -12,19 +12,19 @@ use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\Palette\RGB;
 use Imagine\Image\Point;
-use Imagine\Imagick\Image;
 use Imagine\Imagick\Imagine;
+use Psr\SimpleCache\CacheInterface;
 
 class Helper
 {
     /**
-     * @param \Imagine\Image\ImageInterface $oOrigImage
-     * @param int                           $iThumbWidth
-     * @param int                           $iThumbHeight
+     * @param ImageInterface $oOrigImage
+     * @param int            $iThumbWidth
+     * @param int            $iThumbHeight
      *
      * @return \Imagine\Image\ImageInterface
      */
-    public static function addMargin(Image $oOrigImage, int $iThumbWidth, int $iThumbHeight)
+    public static function addMargin(ImageInterface $oOrigImage, int $iThumbWidth, int $iThumbHeight): ImageInterface
     {
         /**
          * @var \Imagine\Image\ImageInterface $thumb
@@ -50,6 +50,42 @@ class Helper
         $preserve->paste($oOrigImage, new Point($startX, $startY));
 
         return $preserve;
+    }/** @noinspection SummerTimeUnsafeTimeManipulationInspection */
+
+    /**
+     * @param \Psr\SimpleCache\CacheInterface|null $oCache
+     * @param \Closure                             $closure
+     * @param string                               $hashKey
+     * @param int                                  $ttl
+     *
+     * @return mixed
+     */
+    public static function getFromCache(CacheInterface $oCache = null, \Closure $closure, string $hashKey, int $ttl = 3600 * 24)
+    {
+        if ($oCache) {
+            if ($oCache->has($hashKey)) {
+                $answer = $oCache->get($hashKey, null);
+            } else {
+                $answer = $closure();
+                $oCache->set($hashKey, $answer, $ttl);
+            }
+        } else {
+            $answer = $closure();
+        }
+
+        return $answer;
+    }
+
+    /**
+     * @param string $blob
+     *
+     * @return string
+     */
+    public static function getMimeFromBlob(string $blob): string
+    {
+        $finfo = new \finfo(\FILEINFO_MIME_TYPE);
+
+        return $finfo->buffer($blob);
     }
 
     /**
@@ -59,7 +95,7 @@ class Helper
      *
      * @return \Imagine\Image\ImageInterface
      */
-    public static function resizeFill(ImageInterface $oOrigImage, int $iThumbWidth = null, int $iThumbHeight = null)
+    public static function resizeFill(ImageInterface $oOrigImage, int $iThumbWidth = null, int $iThumbHeight = null): ImageInterface
     {
         /**
          * @var \Imagine\Image\ImageInterface $thumb
@@ -111,7 +147,7 @@ class Helper
      *
      * @return \Imagine\Image\ImageInterface
      */
-    public static function resizeFit(ImageInterface $oOrigImage, int $iThumbWidth = null, int $iThumbHeight = null)
+    public static function resizeFit(ImageInterface $oOrigImage, int $iThumbWidth = null, int $iThumbHeight = null): ImageInterface
     {
         if (null === $iThumbHeight && null === $iThumbWidth) {
             return $oOrigImage->copy();

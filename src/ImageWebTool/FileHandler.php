@@ -34,13 +34,13 @@ class FileHandler
     /**
      * FileHandler constructor.
      *
-     * @param string $fileName
+     * @param string                        $fileName
      *
-     * @param string $params
+     * @param \mrcnpdlk\ImageWebTool\Params $oParams
      *
      * @throws \mrcnpdlk\ImageWebTool\Exception
      */
-    public function __construct(string $fileName, string $params = null)
+    public function __construct(string $fileName, Params $oParams)
     {
         /* clear filename */
         $fileName      = basename($fileName);
@@ -51,14 +51,14 @@ class FileHandler
         }
         $this->oInputImg  = (new Imagine())->open($filePath);
         $this->oOutputImg = $this->oInputImg->copy();
-        $this->setParams($params);
+        $this->oParams    = $oParams;
 
     }
 
     /**
      * Effects
      *
-     * @return \Imagine\Imagick\Image
+     * @return \Imagine\Image\ImageInterface
      */
     protected function effect()
     {
@@ -143,26 +143,13 @@ class FileHandler
         if ($this->oParams->r) {
             $palette = new RGB();
             if ($this->oParams->bgc) {
-                $color   = $palette->color($this->oParams->bgc);
-            }else{
-                $color   = $palette->color('#FFF',0);
+                $color = $palette->color($this->oParams->bgc);
+            } else {
+                $color = $palette->color('#FFF', 0);
             }
             $this->oOutputImg->rotate($this->oParams->r, $color);
         }
 
         return $this->oOutputImg;
-    }
-
-    /**
-     * @param string $params
-     *
-     * @return $this
-     */
-    private function setParams(string $params = null)
-    {
-        $this->oParams = new Params($params);
-        $this->oParams->standardize();
-
-        return $this;
     }
 }

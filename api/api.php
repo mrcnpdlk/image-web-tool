@@ -1,10 +1,23 @@
 <?php
 
+use mrcnpdlk\ImageWebTool\Bootstrap;
+use mrcnpdlk\ImageWebTool\FileHandler;
+use mrcnpdlk\ImageWebTool\Helper;
+use phpFastCache\Helper\Psr16Adapter;
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 require __DIR__ . '/../vendor/autoload.php';
+
+$oInstanceCacheRedis = new Psr16Adapter(
+    'redis',
+    [
+        "host"                => null, // default localhost
+        "port"                => null, // default 6379
+        'defaultTtl'          => 3600 * 24, // 24h
+        'ignoreSymfonyNotice' => true,
+    ]);
 
 $config = [
     'settings' => [
@@ -17,27 +30,34 @@ $config = [
         ],
     ],
 ];
-$app    = new App($config);
+
+$app = new App($config);
 $app->add(new RKA\Middleware\IpAddress(true, ['127.0.0.1']));
 
-$app->get('/{vendor}/{opts}[/{file}]', function (Request $request, Response $response, $args) {
-    $ipAddress = $request->getAttribute('ip_address');
+// cache injection
+$container                  = $app->getContainer();
+$container['cacheInstance'] = $oInstanceCacheRedis;
 
-    $vendor = $args['vendor'];
-    $opts   = isset($args['file']) ? $args['opts'] : null;
-    $file   = $args['file'] ?? $args['opts'];
 
-    $oFile = new \mrcnpdlk\ImageWebTool\FileHandler($file, $opts);
-    $image = $oFile->getBlob();
-    $finfo = new finfo(\FILEINFO_MIME_TYPE);
-    $mime  = $finfo->buffer($image);
-    $response->write($image);
+$app->get('/{version}/{params}[/{file}]', function (Request $request, Response $response, $args) {
 
-    return $response->withHeader('Content-Type', $mime);
+    $oBootstrap = new Bootstrap($request, $args);
+    /**
+     * @var string $imageBlob
+     */
+    $imageBlob = Helper::getFromCache(
+        $this->cacheInstance,
+        function () use ($oBootstrap) {
+            $oFile = new FileHandler($oBootstrap->getFileName(), $oBootstrap->getParams());
 
-    //$t   = [$vendor, explode(',', $opts), $file];
-    //$t[] = $ipAddress;
-    //return $response->withJson($t);
+            return $oFile->getBlob();
+        },
+        $oBootstrap->getHash()
+    );
+    $response->write($imageBlob);
+
+    return $response->withHeader('Content-Type', Helper::getMimeFromBlob($imageBlob));
+
 });
 
 $app->run();

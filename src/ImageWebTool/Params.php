@@ -113,10 +113,10 @@ class Params
      *
      * @return string
      */
-    private static function parseHexColor(string $hexColor)
+    private static function parseHexColor(string $hexColor): string
     {
         $hexColor = ltrim($hexColor, '#');
-        $len      = strlen($hexColor);
+        $len      = \strlen($hexColor);
         if ($len < 3) {
             $hexColor = str_pad($hexColor, 3, '0', \STR_PAD_RIGHT);
         } elseif ($len > 3 && $len < 6) {
@@ -154,6 +154,7 @@ class Params
                 $q = ['jpeg_quality' => $this->q];
                 break;
             case 'png':
+                $q = [];
                 break;
             default:
                 break;
