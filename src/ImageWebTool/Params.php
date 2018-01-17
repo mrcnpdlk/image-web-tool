@@ -14,6 +14,10 @@ namespace mrcnpdlk\ImageWebTool;
  */
 class Params
 {
+    const W_SCALE = 'scale';
+    const W_FIT   = 'fit';
+    const W_FILL  = 'fill';
+
     /**
      * Width (px) - if NULL original value is taken
      *
@@ -43,16 +47,22 @@ class Params
      * @var string|null
      */
     public $c;
+    /**
+     * Quality 0-100
+     *
+     * @var integer
+     */
+    public $q;
 
     /**
      * Params constructor.
      *
      * @param string $params
      */
-    public function __construct(string $params)
+    public function __construct(string $params = null)
     {
         $params = trim($params);
-        if ('' !== $params) {
+        if (!empty($params)) {
             $tParams = explode(',', $params);
             foreach ($tParams as $param) {
                 $tKeyValuePair = explode('_', $param);
@@ -61,18 +71,6 @@ class Params
                 }
             }
         }
-    }
-
-    /**
-     * @param $name
-     *
-     * @return string
-     */
-    protected function getCamelCaseName($name): string
-    {
-        return str_replace(
-            ' ', '', ucwords(str_replace(['_', '-'], ' ', $name))
-        );
     }
 
     /**
@@ -91,6 +89,18 @@ class Params
         }
 
         return $this;
+    }
+
+    /**
+     * @param $name
+     *
+     * @return string
+     */
+    protected function getCamelCaseName($name): string
+    {
+        return str_replace(
+            ' ', '', ucwords(str_replace(['_', '-'], ' ', $name))
+        );
     }
 
     /**
@@ -131,5 +141,47 @@ class Params
         $this->w = (int)$value;
 
         return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function standardize()
+    {
+        if (null === $this->c) {
+            if ($this->w && $this->h) {
+                $this->c = self::W_SCALE;
+            } else {
+                $this->c = self::W_FIT;
+            }
+        }
+
+        if ($this->q <= 0 || $this->q > 100 || null === $this->q) {
+            $this->q = 75;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $format
+     *
+     * @return array
+     */
+    public function getQuality(string $format = 'jpg'): array
+    {
+        $answer = [];
+        switch (strtolower($format)) {
+            case 'jpg':
+            case 'jpeg':
+                $q = ['jpeg_quality' => $this->q];
+                break;
+            case 'png':
+                break;
+            default:
+                break;
+        }
+
+        return array_merge($q) ?? [];
     }
 }

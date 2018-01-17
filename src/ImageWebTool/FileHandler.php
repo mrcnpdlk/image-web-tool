@@ -40,7 +40,7 @@ class FileHandler
      *
      * @throws \mrcnpdlk\ImageWebTool\Exception
      */
-    public function __construct(string $fileName, string $params)
+    public function __construct(string $fileName, string $params = null)
     {
         /* clear filename */
         $fileName      = basename($fileName);
@@ -56,6 +56,19 @@ class FileHandler
     }
 
     /**
+     * @param string $params
+     *
+     * @return $this
+     */
+    private function setParams(string $params = null)
+    {
+        $this->oParams = new Params($params);
+        $this->oParams->standardize();
+
+        return $this;
+    }
+
+    /**
      * @param string|null $format
      *
      * @return string
@@ -67,7 +80,7 @@ class FileHandler
         $this->resize();
 
         return $this->oOutputImg
-            ->get($format);
+            ->get($format,$this->oParams->getQuality($format));
     }
 
     /**
@@ -80,16 +93,16 @@ class FileHandler
         $h       = $this->oParams->h ?? $origBox->getHeight();
         $oBox    = new Box($w, $h);
         switch ($this->oParams->c) {
-            case 'scale':
+            case Params::W_SCALE:
                 $this->oOutputImg->resize($oBox);
                 break;
-            case 'fit':
+            case Params::W_FIT:
                 /**
                  * @todo Problem with resize UP
                  */
                 $this->oOutputImg = $this->oInputImg->thumbnail($oBox, ImageInterface::THUMBNAIL_INSET);
                 break;
-            case 'fill':
+            case Params::W_FILL:
                 /**
                  * @todo Problem with resize UP
                  */
@@ -99,18 +112,6 @@ class FileHandler
                 $this->oOutputImg = $this->oInputImg->thumbnail($oBox, ImageInterface::THUMBNAIL_INSET);
                 break;
         }
-
-        return $this;
-    }
-
-    /**
-     * @param string $params
-     *
-     * @return $this
-     */
-    private function setParams(string $params)
-    {
-        $this->oParams = new Params($params);
 
         return $this;
     }
