@@ -7,18 +7,39 @@
 
 namespace mrcnpdlk\ImageWebTool;
 
-
+/**
+ * Class Params
+ *
+ * @package mrcnpdlk\ImageWebTool
+ */
 class Params
 {
     /**
+     * Width (px) - if NULL original value is taken
+     *
      * @var int|null
      */
     public $w;
     /**
+     * Height (px)  - if NULL original value is taken
+     *
      * @var int|null
      */
     public $h;
     /**
+     * Crop mode
+     *
+     * SCALE - Change the size of the image exactly to the given width and height without necessarily retaining the original aspect ratio:
+     * all original image parts are visible but might be stretched or shrunk
+     *
+     * FIT - The image is resized so that it takes up as much space
+     * as possible within a bounding box defined by the given width and height parameters. The original aspect ratio is retained and all of
+     * the original image is visible
+     *
+     * FILL  - Create an image with the exact given width and height while retaining the original aspect ratio, using only part of the
+     * image that fills the given dimensions if necessary (only part of the original image might be visible if the requested aspect ratio
+     * is different from the original aspect ratio)
+     *
      * @var string|null
      */
     public $c;
@@ -68,6 +89,18 @@ class Params
         } elseif (property_exists($this, $key)) {
             $this->{$key} = $value;
         }
+
+        return $this;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return $this
+     */
+    public function setC($value)
+    {
+        $this->c = strtolower((string)$value);
 
         return $this;
     }

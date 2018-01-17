@@ -9,6 +9,7 @@ namespace mrcnpdlk\ImageWebTool;
 
 
 use Imagine\Image\Box;
+use Imagine\Image\ImageInterface;
 use Imagine\Imagick\Imagine;
 
 class FileHandler
@@ -21,7 +22,14 @@ class FileHandler
      * @var \mrcnpdlk\ImageWebTool\Params
      */
     private $oParams;
-    private $oImg;
+    /**
+     * @var \Imagine\Image\ImageInterface|\Imagine\Imagick\Image
+     */
+    private $oInputImg;
+    /**
+     * @var \Imagine\Image\ImageInterface|\Imagine\Imagick\Image
+     */
+    private $oOutputImg;
 
     /**
      * FileHandler constructor.
@@ -41,17 +49,58 @@ class FileHandler
         if (!is_file($filePath) || !file_exists($filePath) || !is_readable($filePath)) {
             throw new Exception(sprintf('File [%s] not exists on storage or is not readable', $fileName));
         }
-        $this->oImg = (new Imagine())->open($filePath);
+        $this->oInputImg  = (new Imagine())->open($filePath);
+        $this->oOutputImg = clone $this->oInputImg;
         $this->setParams($params);
 
     }
 
+    /**
+     * @param string|null $format
+     *
+     * @return string
+     */
+    public function getBlob(string $format = null): string
+    {
+        $format = $format ?? $this->oOutputImg->getImagick()->getImageFormat();
+
+        $this->resize();
+
+        return $this->oOutputImg
+            ->get($format);
+    }
+
+    /**
+     * @return $this
+     */
     protected function resize()
     {
-        $origBox = $this->oImg->getSize();
+        $origBox = $this->oInputImg->getSize();
         $w       = $this->oParams->w ?? $origBox->getWidth();
         $h       = $this->oParams->h ?? $origBox->getHeight();
-        $this->oImg->resize(new Box($w, $h));
+        $oBox    = new Box($w, $h);
+        switch ($this->oParams->c) {
+            case 'scale':
+                $this->oOutputImg->resize($oBox);
+                break;
+            case 'fit':
+                /**
+                 * @todo Problem with resize UP
+                 */
+                $this->oOutputImg = $this->oInputImg->thumbnail($oBox, ImageInterface::THUMBNAIL_INSET);
+                break;
+            case 'fill':
+                /**
+                 * @todo Problem with resize UP
+                 */
+                $this->oOutputImg = $this->oInputImg->thumbnail($oBox, ImageInterface::THUMBNAIL_OUTBOUND);
+                break;
+            default:
+                $this->oOutputImg = $this->oInputImg->thumbnail($oBox, ImageInterface::THUMBNAIL_INSET);
+                break;
+        }
+
+        return $this;
     }
 
     /**
@@ -64,20 +113,5 @@ class FileHandler
         $this->oParams = new Params($params);
 
         return $this;
-    }
-
-    /**
-     * @param string|null $format
-     *
-     * @return string
-     */
-    public function getBlob(string $format = null): string
-    {
-        $format = $format ?? $this->oImg->getImagick()->getImageFormat();
-
-        $this->resize();
-
-        return $this->oImg
-            ->get($format);
     }
 }
