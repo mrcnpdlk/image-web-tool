@@ -10,6 +10,7 @@ namespace mrcnpdlk\ImageWebTool;
 
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
+use Imagine\Image\Palette\RGB;
 use Imagine\Imagick\Imagine;
 
 class FileHandler
@@ -77,11 +78,44 @@ class FileHandler
     {
         $format = $format ?? $this->oOutputImg->getImagick()->getImageFormat();
 
+        $this->effect();
         $this->resize();
         $this->rotate();
 
         return $this->oOutputImg
             ->get($format, $this->oParams->getQuality($format));
+    }
+
+    /**
+     * Effects
+     *
+     * @return \Imagine\Imagick\Image
+     */
+    protected function effect()
+    {
+        if ($this->oParams->e) {
+            switch ($this->oParams->e) {
+                case Params::E_NEGATIVE:
+                    $this->oOutputImg->effects()->negative();
+                    break;
+                case Params::E_GRAYSCALE:
+                    $this->oOutputImg->effects()->grayscale();
+                    break;
+                case Params::E_BLUR:
+                    $this->oOutputImg->effects()->blur($this->oParams->eo);
+                    break;
+                case Params::E_COLORIZE:
+                    $palette = new RGB();
+                    $color   = $palette->color($this->oParams->eo);
+                    $this->oOutputImg->effects()->colorize($color);
+                    break;
+                case Params::E_GAMMA:
+                    $this->oOutputImg->effects()->gamma($this->oParams->eo);
+                    break;
+            }
+        }
+
+        return $this->oOutputImg;
     }
 
     /**
@@ -94,16 +128,16 @@ class FileHandler
         $h       = $this->oParams->h ?? $origBox->getHeight();
         $oBox    = new Box($w, $h);
         switch ($this->oParams->c) {
-            case Params::W_SCALE:
+            case Params::C_SCALE:
                 $this->oOutputImg->resize($oBox);
                 break;
-            case Params::W_FIT:
+            case Params::C_FIT:
                 /**
                  * @todo Problem with resize UP
                  */
                 $this->oOutputImg = $this->oInputImg->thumbnail($oBox, ImageInterface::THUMBNAIL_INSET);
                 break;
-            case Params::W_FILL:
+            case Params::C_FILL:
                 /**
                  * @todo Problem with resize UP
                  */
@@ -123,7 +157,11 @@ class FileHandler
     protected function rotate()
     {
         if ($this->oParams->r) {
-            $this->oOutputImg->rotate($this->oParams->r);
+            if ($this->oParams->bgc) {
+                $palette = new RGB();
+                $color   = $palette->color($this->oParams->bgc);
+            }
+            $this->oOutputImg->rotate($this->oParams->r, $color ?? null);
         }
 
         return $this->oOutputImg;
