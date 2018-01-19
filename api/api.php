@@ -26,7 +26,6 @@ $config = [
 ];
 
 $app = new App($config);
-$app->add(new RKA\Middleware\IpAddress(true, ['127.0.0.1']));
 
 // cache injection
 $container                  = $app->getContainer();
@@ -47,7 +46,7 @@ $app->get('/{version}/{params}[/{file}]', function (Request $request, Response $
             return $oFile->getBlob();
         },
         $oBootstrap->getHash(),
-        1
+        3600 * 24
     );
     $response->write($imageBlob);
 
