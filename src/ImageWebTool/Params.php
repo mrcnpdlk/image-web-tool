@@ -157,6 +157,7 @@ class Params
                 $q = [];
                 break;
             default:
+                $q = [];
                 break;
         }
 
