@@ -21,6 +21,7 @@ class Config extends AbstractConfig
     {
         return [
             'storage' => \dirname(__DIR__, 2) . '/content',
+            'font'    => \dirname(__DIR__, 2) . '/fonts/blowbrush/blowbrush.ttf',
         ];
     }
 }

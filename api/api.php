@@ -21,13 +21,7 @@ $oInstanceCacheRedis = new Psr16Adapter(
 
 $config = [
     'settings' => [
-        'displayErrorDetails' => true,
-
-        'logger' => [
-            'name'  => 'slim-app',
-            'level' => Monolog\Logger::DEBUG,
-            'path'  => '/var/log/nginx/iwt-error.log',
-        ],
+        'displayErrorDetails' => false,
     ],
 ];
 
