@@ -28,10 +28,7 @@ class Placeholder
      * @var \Imagine\Image\ImageInterface
      */
     private $oOutputPlaceholder;
-    /**
-     * @var \mrcnpdlk\ImageWebTool\Config
-     */
-    private $oConfig;
+
 
     /**
      * Placeholder constructor.
@@ -43,7 +40,6 @@ class Placeholder
     public function __construct(int $width = null, int $height = null, string $format = 'png')
     {
         $this->oImagine           = new Imagine();
-        $this->oConfig            = new Config([]);
         $this->oInputPlaceholder  = $this->oImagine->create(
             new Box($width ?? 200, $height ?? 200),
             (new RGB())->color('#D3D3D3', 100));
@@ -67,7 +63,7 @@ class Placeholder
     /**
      * @return \Imagine\Image\ImageInterface
      */
-    public function get()
+    public function get(): \Imagine\Image\ImageInterface
     {
         return $this->oOutputPlaceholder;
     }
@@ -90,7 +86,7 @@ class Placeholder
         do {
             $oFont = new Font(
                 $this->oOutputPlaceholder->getImagick(),
-                $this->oConfig->get('font'),
+                Helper::getConfig()->get('font'),
                 $fontSize--,
                 (new RGB())->color('#000', 100));
 

@@ -18,6 +18,11 @@ use Psr\SimpleCache\CacheInterface;
 class Helper
 {
     /**
+     * @var \mrcnpdlk\ImageWebTool\Config
+     */
+    private static $oConfig;
+
+    /**
      * @param ImageInterface $oOrigImage
      * @param int            $iThumbWidth
      * @param int            $iThumbHeight
@@ -50,7 +55,19 @@ class Helper
         $preserve->paste($oOrigImage, new Point($startX, $startY));
 
         return $preserve;
-    }/** @noinspection SummerTimeUnsafeTimeManipulationInspection */
+    }
+
+    /**
+     * @return \mrcnpdlk\ImageWebTool\Config
+     */
+    public static function getConfig(): Config
+    {
+        if (!self::$oConfig) {
+            self::$oConfig = new Config([]);
+        }
+
+        return self::$oConfig;
+    }
 
     /**
      * @param \Psr\SimpleCache\CacheInterface|null $oCache
@@ -176,5 +193,13 @@ class Helper
         }
 
         return $oImage->thumbnail($box, ImageInterface::THUMBNAIL_INSET);
+    }
+
+    /**
+     * @param \mrcnpdlk\ImageWebTool\Config $oConfig
+     */
+    public static function setConfig(Config $oConfig)
+    {
+        self::$oConfig = $oConfig;
     }
 }

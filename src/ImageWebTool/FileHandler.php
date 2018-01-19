@@ -15,10 +15,6 @@ use Imagine\Imagick\Imagine;
 class FileHandler
 {
     /**
-     * @var \mrcnpdlk\ImageWebTool\Config
-     */
-    private $oConfig;
-    /**
      * @var \mrcnpdlk\ImageWebTool\Params
      */
     private $oParams;
@@ -44,22 +40,26 @@ class FileHandler
     {
         /* clear filename */
         $fileName      = basename($fileName);
-        $this->oConfig = new Config([]);
         $this->oParams = $oParams;
-        $filePath      = rtrim($this->oConfig->get('storage', ''), '/') . \DIRECTORY_SEPARATOR . $fileName;
-        if (!is_file($filePath) || !file_exists($filePath) || !is_readable($filePath)) {
-            $fileName     = pathinfo(basename($filePath), \PATHINFO_FILENAME);
-            $format       = pathinfo(basename($filePath), \PATHINFO_EXTENSION);
-            $oPlaceholder = Placeholder::create($this->oParams->w, $this->oParams->h, $format);
+        $filePath      = rtrim(Helper::getConfig()->get('storage', ''), '/') . \DIRECTORY_SEPARATOR . $fileName;
+        try {
+            if (!is_file($filePath) || !file_exists($filePath) || !is_readable($filePath)) {
+                $fileName     = pathinfo(basename($filePath), \PATHINFO_FILENAME);
+                $format       = pathinfo(basename($filePath), \PATHINFO_EXTENSION);
+                $oPlaceholder = Placeholder::create($this->oParams->w, $this->oParams->h, $format);
 
-            if ('placeholder' === strtolower($fileName)) {
-                $this->oInputImg = $oPlaceholder->setText()->get();
+                if ('placeholder' === strtolower($fileName)) {
+                    $this->oInputImg = $oPlaceholder->setText()->get();
+                } else {
+                    $this->oInputImg = $oPlaceholder->setText('Not found')->get();
+                }
+
             } else {
-                $this->oInputImg = $oPlaceholder->setText('Not found')->get();
+                $this->oInputImg = (new Imagine())->open($filePath);
             }
-
-        } else {
-            $this->oInputImg = (new Imagine())->open($filePath);
+        } catch (\Exception $e) {
+            $oPlaceholder    = Placeholder::create($this->oParams->w, $this->oParams->h);
+            $this->oInputImg = $oPlaceholder->get();
         }
 
         $this->oOutputImg = $this->oInputImg->copy();
@@ -70,7 +70,7 @@ class FileHandler
      *
      * @return \Imagine\Image\ImageInterface
      */
-    protected function effect()
+    protected function effect(): \Imagine\Image\ImageInterface
     {
         if ($this->oParams->e) {
             switch ($this->oParams->e) {

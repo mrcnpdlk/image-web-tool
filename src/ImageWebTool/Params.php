@@ -147,7 +147,6 @@ class Params
      */
     public function getQuality(string $format = 'jpg'): array
     {
-        $answer = [];
         switch (strtolower($format)) {
             case 'jpg':
             case 'jpeg':

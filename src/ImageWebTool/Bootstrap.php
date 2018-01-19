@@ -13,10 +13,6 @@ use Slim\Http\Request;
 class Bootstrap
 {
     /**
-     * @var string|null
-     */
-    private $ipAddress;
-    /**
      * @var string
      */
     private $hash;
@@ -41,7 +37,6 @@ class Bootstrap
      */
     public function __construct(Request $oRequest, array $args)
     {
-        $this->ipAddress = $oRequest->getAttribute('ip_address', null);
         $this->hash      = md5($oRequest->getUri()->getPath());
         $this->version   = $args['version'];
         $params          = isset($args['file']) ? $args['params'] : null;
@@ -65,14 +60,6 @@ class Bootstrap
     public function getHash(): string
     {
         return $this->hash;
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getIpAddress()
-    {
-        return $this->ipAddress;
     }
 
     /**

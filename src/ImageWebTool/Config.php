@@ -20,8 +20,11 @@ class Config extends AbstractConfig
     protected function getDefaults(): array
     {
         return [
-            'storage' => \dirname(__DIR__, 2) . '/content',
-            'font'    => \dirname(__DIR__, 2) . '/fonts/blowbrush/blowbrush.ttf',
+            'storage'       => \dirname(__DIR__, 2) . '/content',
+            'font'          => \dirname(__DIR__, 2) . '/fonts/blowbrush/blowbrush.ttf',
+            'cacheInstance' => null,
+            'debug'         => false,
         ];
     }
+
 }
