@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2c231094e999c66eba88203e7c68cc68",
+    "content-hash": "96e8f849cf85a48aa2183b409ca848e5",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -151,6 +151,48 @@
                 "image processing"
             ],
             "time": "2017-05-16T10:31:22+00:00"
+        },
+        {
+            "name": "mrcnpdlk/pfc-adapter",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mrcnpdlk/pfc-adapter.git",
+                "reference": "48a658bf25e8760039aafe6d8b9d740db03dd714"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mrcnpdlk/pfc-adapter/zipball/48a658bf25e8760039aafe6d8b9d740db03dd714",
+                "reference": "48a658bf25e8760039aafe6d8b9d740db03dd714",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0",
+                "phpfastcache/phpfastcache": "~6.0.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "mrcnpdlk\\Lib\\PfcAdapter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marcin Pudełek",
+                    "email": "marcin@pudelek.org.pl",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PhpFastCache Adapter",
+            "keywords": [
+                "phpfastcache",
+                "redis"
+            ],
+            "time": "2018-01-18T11:46:25+00:00"
         },
         {
             "name": "nikic/fast-route",
