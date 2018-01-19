@@ -45,14 +45,24 @@ class FileHandler
         /* clear filename */
         $fileName      = basename($fileName);
         $this->oConfig = new Config([]);
+        $this->oParams = $oParams;
         $filePath      = rtrim($this->oConfig->get('storage', ''), '/') . \DIRECTORY_SEPARATOR . $fileName;
         if (!is_file($filePath) || !file_exists($filePath) || !is_readable($filePath)) {
-            throw new Exception(sprintf('File [%s] not exists on storage or is not readable', $fileName));
-        }
-        $this->oInputImg  = (new Imagine())->open($filePath);
-        $this->oOutputImg = $this->oInputImg->copy();
-        $this->oParams    = $oParams;
+            $fileName     = pathinfo(basename($filePath), \PATHINFO_FILENAME);
+            $format       = pathinfo(basename($filePath), \PATHINFO_EXTENSION);
+            $oPlaceholder = Placeholder::create($this->oParams->w, $this->oParams->h, $format);
 
+            if ('placeholder' === strtolower($fileName)) {
+                $this->oInputImg = $oPlaceholder->setText()->get();
+            } else {
+                $this->oInputImg = $oPlaceholder->setText('Not found')->get();
+            }
+
+        } else {
+            $this->oInputImg = (new Imagine())->open($filePath);
+        }
+
+        $this->oOutputImg = $this->oInputImg->copy();
     }
 
     /**
@@ -95,6 +105,7 @@ class FileHandler
     public function getBlob(string $format = null): string
     {
         $format = $format ?? $this->oOutputImg->getImagick()->getImageFormat();
+
 
         $this->effect();
         $this->resize();

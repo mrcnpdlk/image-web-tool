@@ -52,7 +52,8 @@ $app->get('/{version}/{params}[/{file}]', function (Request $request, Response $
 
             return $oFile->getBlob();
         },
-        $oBootstrap->getHash()
+        $oBootstrap->getHash(),
+        1
     );
     $response->write($imageBlob);
 
