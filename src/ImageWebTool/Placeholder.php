@@ -86,7 +86,7 @@ class Placeholder
         do {
             $oFont = new Font(
                 $this->oOutputPlaceholder->getImagick(),
-                Helper::getConfig()->get('font'),
+                Helper::getConfig('font'),
                 $fontSize--,
                 (new RGB())->color('#000', 100));
 

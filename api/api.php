@@ -1,7 +1,6 @@
 <?php
 
 use mrcnpdlk\ImageWebTool\Bootstrap;
-use mrcnpdlk\ImageWebTool\Config;
 use mrcnpdlk\ImageWebTool\FileHandler;
 use mrcnpdlk\ImageWebTool\Helper;
 use Slim\App;
@@ -13,15 +12,11 @@ require __DIR__ . '/../vendor/autoload.php';
 /**
  * API Configuration
  */
-Helper::setConfig(
-    new Config([__DIR__.'/../config/imagewebtool.ini'])
-);
-
 
 $app = new App(
     [
         'settings' => [
-            'displayErrorDetails' => Helper::getConfig()->get('debug', false),
+            'displayErrorDetails' => Helper::getConfig('debug', false),
         ],
     ]
 );
@@ -34,7 +29,7 @@ $app->get('/{version}/{params}[/{file}]', function (Request $request, Response $
      * @var string                         $imageBlob
      * @var \mrcnpdlk\Lib\PfcAdapter\Cache $oCache
      */
-    $oCache    = Helper::getConfig()->get('cacheInstance');
+    $oCache    = Helper::getConfig('cacheInstance');
     $imageBlob = $oCache
         ->set(
             function () use ($oBootstrap) {

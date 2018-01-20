@@ -58,15 +58,21 @@ class Helper
     }
 
     /**
-     * @return \mrcnpdlk\ImageWebTool\Config
+     * @return mixed
      */
-    public static function getConfig(): Config
+    public static function getConfig(string $key, $defValue = null)
     {
         if (!self::$oConfig) {
-            self::$oConfig = new Config([]);
+            $userJsonPath = __DIR__ . '/../../config/config.json';
+            if (is_file($userJsonPath) && is_readable($userJsonPath)) {
+                self::$oConfig = new Config([$userJsonPath]);
+            } else {
+                self::$oConfig = new Config([]);
+            }
+
         }
 
-        return self::$oConfig;
+        return self::$oConfig->get($key, $defValue);
     }
 
     /**
@@ -193,13 +199,5 @@ class Helper
         }
 
         return $oImage->thumbnail($box, ImageInterface::THUMBNAIL_INSET);
-    }
-
-    /**
-     * @param \mrcnpdlk\ImageWebTool\Config $oConfig
-     */
-    public static function setConfig(Config $oConfig)
-    {
-        self::$oConfig = $oConfig;
     }
 }

@@ -41,7 +41,7 @@ class FileHandler
         /* clear filename */
         $fileName      = basename($fileName);
         $this->oParams = $oParams;
-        $filePath      = rtrim(Helper::getConfig()->get('storage', ''), '/') . \DIRECTORY_SEPARATOR . $fileName;
+        $filePath      = rtrim(Helper::getConfig('storage', ''), '/') . \DIRECTORY_SEPARATOR . $fileName;
         try {
             if (!is_file($filePath) || !file_exists($filePath) || !is_readable($filePath)) {
                 $fileName     = pathinfo(basename($filePath), \PATHINFO_FILENAME);
