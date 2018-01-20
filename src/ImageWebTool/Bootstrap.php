@@ -17,10 +17,6 @@ class Bootstrap
      */
     private $hash;
     /**
-     * @var string
-     */
-    private $version;
-    /**
      * @var \mrcnpdlk\ImageWebTool\Params
      */
     private $oParams;
@@ -37,10 +33,9 @@ class Bootstrap
      */
     public function __construct(Request $oRequest, array $args)
     {
-        $this->hash      = md5($oRequest->getUri()->getPath());
-        $this->version   = $args['version'];
-        $params          = isset($args['file']) ? $args['params'] : null;
-        $this->fileName  = basename($args['file'] ?? $args['params']);
+        $this->hash     = md5($oRequest->getUri()->getPath());
+        $params         = isset($args['file']) ? $args['params'] : null;
+        $this->fileName = basename($args['file'] ?? $args['params']);
 
         $this->oParams = new Params($params);
         $this->oParams->standardize();

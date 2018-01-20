@@ -22,7 +22,7 @@ $app = new App(
 );
 
 
-$app->get('/{version}/{params}[/{file}]', function (Request $request, Response $response, $args) {
+$app->get('/{params}[/{file}]', function (Request $request, Response $response, $args) {
 
     $oBootstrap = new Bootstrap($request, $args);
     /**
