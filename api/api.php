@@ -41,7 +41,7 @@ $app->get('/{params}[/{file}]', function (Request $request, Response $response, 
             },
             $oBootstrap->getHash(),
             null,
-            1
+            3600 * 24 // 24h
         )
         ->get()
     ;
