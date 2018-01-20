@@ -64,12 +64,4 @@ class Bootstrap
     {
         return $this->oParams;
     }
-
-    /**
-     * @return string
-     */
-    public function getVersion(): string
-    {
-        return $this->version;
-    }
 }
