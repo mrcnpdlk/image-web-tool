@@ -58,6 +58,9 @@ class FileHandler
                 $this->oInputImg = (new Imagine())->open($filePath);
             }
         } catch (\Exception $e) {
+            if (Helper::getConfig('debug')) {
+                throw $e;
+            }
             $oPlaceholder    = Placeholder::create($this->oParams->w, $this->oParams->h);
             $this->oInputImg = $oPlaceholder->get();
         }
