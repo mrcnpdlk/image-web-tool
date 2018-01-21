@@ -21,6 +21,10 @@ Edit file and set or delete options:
 
 Default font [BlowBrush](https://www.behance.net/gallery/33043073/BlowBrush-free-font) is included to the project.
 
+### Caching
+
+For better performance for each request cache is used.
+REDIS if enabled. If not FILES is used.
 
 ### Request url schema
 Example
