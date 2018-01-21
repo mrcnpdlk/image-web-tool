@@ -2,13 +2,25 @@
 
 Simple image web tool manipulation package - other than all.
 
-## Powers
+## Instalation
 
+The best way is cloning the repo with specific branch name.
+Stable releases are sown [here](https://github.com/mrcnpdlk/image-web-tool/releases).
+
+```bash
+git clone -b {STABLE_VERSION} https://github.com/mrcnpdlk/image-web-tool.git
+```
 
 ## Configuration
 
+In folder config copy file `config.json.dist` and rename to `config.json`.
+Edit file and set or delete options:
+  - `storage` - path to the folder with pictures
+  - `font` - path to the ttf file with font. Used as font on placeholders files.
+  - `debug` - if TRUE no placeholder, but exception stack is shown.
 
-https://www.behance.net/gallery/33043073/BlowBrush-free-font
+Default font [BlowBrush](https://www.behance.net/gallery/33043073/BlowBrush-free-font) is included to the project.
+
 
 ### Request url schema
 Example
@@ -95,3 +107,60 @@ server {
         proxy_redirect off;
     }
 ```
+
+
+### Examples
+#### `/h_100/demo.jpg`
+Height is set. Default FIT crop mode is enabled.
+
+![alt text](https://github.com/mrcnpdlk/image-web-tool/blob/master/demo/h_100-demo.jpg?raw=true)
+
+#### `/h_200,e_b,eo_5/demo.jpg`
+Blur effect.
+
+![alt text](https://github.com/mrcnpdlk/image-web-tool/blob/master/demo/h_200,e_b,eo_5-demo.jpg?raw=true)
+
+#### `/h_200,e_b,eo_5/demo.jpg`
+Colorization effect with pink color.
+
+![alt text](https://github.com/mrcnpdlk/image-web-tool/blob/master/demo/h_200,e_c,eo_ff4080-demo.jpg?raw=true)
+
+#### `/h_200,e_n/demo.jpg`
+Negative effect.
+
+![alt text](https://github.com/mrcnpdlk/image-web-tool/blob/master/demo/h_200,e_n-demo.jpg?raw=true)
+
+#### `/h_200,q_2/demo.jpg`
+Less quality.
+
+![alt text](https://github.com/mrcnpdlk/image-web-tool/blob/master/demo/h_200,q_2-demo.jpg?raw=true)
+
+#### `/h_200,w_200,c_fill/demo.jpg`
+FILL mode.
+
+![alt text](https://github.com/mrcnpdlk/image-web-tool/blob/master/demo/h_200,w_200,c_fill-demo.jpg?raw=true)
+
+#### `/h_200,w_200,c_fit/demo.jpg`
+FIT mode.
+
+![alt text](https://github.com/mrcnpdlk/image-web-tool/blob/master/demo/h_200,w_200,c_fit-demo.jpg?raw=true)
+
+#### `/h_200,w_200,c_fit-margin/demo.jpg`
+FIT MARGIN mode.
+
+![alt text](https://github.com/mrcnpdlk/image-web-tool/blob/master/demo/h_200,w_200,c_fit-margin-demo.jpg?raw=true)
+
+#### `/h_200,w_200,r_20/demo.jpg`
+ROTATE mode.
+
+![alt text](https://github.com/mrcnpdlk/image-web-tool/blob/master/demo/h_200,w_200,r_20-demo.jpg?raw=true)
+
+#### `/w_200,h_100/demo.jpg`
+File not found. Placeholder is shown.
+
+![alt text](https://github.com/mrcnpdlk/image-web-tool/blob/master/demo/w_200,h_100-notfound.png?raw=true)
+
+#### `/w_200,h_100/demo.jpg`
+Placeholder is shown.
+
+![alt text](https://github.com/mrcnpdlk/image-web-tool/blob/master/demo/w_200,h_100-placeholder.png?raw=true)
