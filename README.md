@@ -32,7 +32,7 @@ Example
 http://example.com/iwt/v1/{params}/{fileName}
 ```
 
-`params` and `fileName` are pass to the api.php file.
+`params` and `fileName` are passed to the api.php file.
 
 ### Request Options (`params`)
 
