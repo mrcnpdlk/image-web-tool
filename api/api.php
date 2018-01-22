@@ -9,7 +9,7 @@
  * For the full copyright and license information, please view source file
  * that is bundled with this package in the file LICENSE
  *
- * @author Marcin Pudełek <marcin@pudelek.org.pl>
+ * @author  Marcin Pudełek <marcin@pudelek.org.pl>
  */
 
 use mrcnpdlk\ImageWebTool\Bootstrap;
@@ -37,6 +37,7 @@ $app = new App(
 $app->get('/{params}[/{file}]', function (Request $request, Response $response, $args) {
 
     $oBootstrap = new Bootstrap($request, $args);
+
     /**
      * @var string                         $imageBlob
      * @var \mrcnpdlk\Lib\PfcAdapter\Cache $oCache
@@ -45,15 +46,13 @@ $app->get('/{params}[/{file}]', function (Request $request, Response $response, 
     $imageBlob = $oCache
         ->set(
             function () use ($oBootstrap) {
-                $oFile = new FileHandler(
-                    $oBootstrap->getFileName(),
-                    $oBootstrap->getParams());
+                $oFile = new FileHandler($oBootstrap);
 
                 return $oFile->getBlob();
             },
             $oBootstrap->getHash(),
             null,
-            3600 * 24 // 24h
+            $oBootstrap->isFileExists() ? 3600 * 24 : 0 // 24h
         )
         ->get()
     ;

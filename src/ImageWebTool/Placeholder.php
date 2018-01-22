@@ -9,7 +9,7 @@
  * For the full copyright and license information, please view source file
  * that is bundled with this package in the file LICENSE
  *
- * @author Marcin Pudełek <marcin@pudelek.org.pl>
+ * @author  Marcin Pudełek <marcin@pudelek.org.pl>
  */
 
 namespace mrcnpdlk\ImageWebTool;
@@ -43,6 +43,9 @@ class Placeholder
      * @param int|null $width
      * @param int|null $height
      * @param string   $format
+     *
+     * @throws \Imagine\Exception\RuntimeException
+     * @throws \Imagine\Exception\InvalidArgumentException
      */
     public function __construct(int $width = null, int $height = null, string $format = 'png')
     {
@@ -81,15 +84,20 @@ class Placeholder
      * @param string|null $text If NULL dimension is shown
      *
      * @return $this
+     * @throws \Imagine\Exception\InvalidArgumentException
+     * @throws \Noodlehaus\Exception\EmptyDirectoryException
      */
     public function setText(string $text = null)
     {
+        if ($this->oOutputPlaceholder->getSize()->getWidth() < 6 && $this->oOutputPlaceholder->getSize()->getHeight()) {
+            return $this;
+        }
         $text = $text ?? sprintf(
                 '%s x %s',
                 $this->oOutputPlaceholder->getSize()->getWidth(),
                 $this->oOutputPlaceholder->getSize()->getHeight());
 
-        $fontSize = 50;
+        $fontSize = Helper::getConfig('font_size');
         do {
             $oFont = new Font(
                 $this->oOutputPlaceholder->getImagick(),
@@ -99,21 +107,25 @@ class Placeholder
 
             $oImageSize = $this->oOutputPlaceholder->getSize();
             $oFontSize  = $oFont->box($text);
-        } while (!$oImageSize->contains($oFontSize) || $fontSize < 0);
+        } while (!$oImageSize->contains($oFontSize));
 
-        $oPoint = new Point(
-            ($oImageSize->getWidth() - $oFontSize->getWidth()) / 2,
-            ($oImageSize->getHeight() - $oFontSize->getHeight()) / 2
-        );
+        try {
+            $oPoint = new Point(
+                ($oImageSize->getWidth() - $oFontSize->getWidth()) / 2,
+                ($oImageSize->getHeight() - $oFontSize->getHeight()) / 2
+            );
 
-        $this->oOutputPlaceholder
-            ->draw()
-            ->text(
-                $text,
-                $oFont,
-                $oPoint
-            )
-        ;
+            $this->oOutputPlaceholder
+                ->draw()
+                ->text(
+                    $text,
+                    $oFont,
+                    $oPoint
+                )
+            ;
+        } catch (\Exception $e) {
+            //do nothing
+        }
 
         return $this;
     }

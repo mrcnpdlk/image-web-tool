@@ -9,7 +9,7 @@
  * For the full copyright and license information, please view source file
  * that is bundled with this package in the file LICENSE
  *
- * @author Marcin Pudełek <marcin@pudelek.org.pl>
+ * @author  Marcin Pudełek <marcin@pudelek.org.pl>
  */
 
 
@@ -38,32 +38,26 @@ class FileHandler
     /**
      * FileHandler constructor.
      *
-     * @param string                        $fileName
+     * @param \mrcnpdlk\ImageWebTool\Bootstrap $oBootstrap
      *
-     * @param \mrcnpdlk\ImageWebTool\Params $oParams
-     *
-     * @throws \mrcnpdlk\ImageWebTool\Exception
+     * @throws \Exception
      */
-    public function __construct(string $fileName, Params $oParams)
+    public function __construct(Bootstrap $oBootstrap)
     {
         /* clear filename */
-        $fileName      = basename($fileName);
-        $this->oParams = $oParams;
-        $filePath      = rtrim(Helper::getConfig('storage', ''), '/') . \DIRECTORY_SEPARATOR . $fileName;
+        $this->oParams = $oBootstrap->getParams();
         try {
-            if (!is_file($filePath) || !file_exists($filePath) || !is_readable($filePath)) {
-                $fileName     = pathinfo(basename($filePath), \PATHINFO_FILENAME);
-                $format       = pathinfo(basename($filePath), \PATHINFO_EXTENSION);
-                $oPlaceholder = Placeholder::create($this->oParams->w, $this->oParams->h, $format);
+            if (!$oBootstrap->isFileExists()) {
+                $oPlaceholder = Placeholder::create($this->oParams->w, $this->oParams->h, $oBootstrap->getExtension());
 
-                if ('placeholder' === strtolower($fileName)) {
+                if ('placeholder' === strtolower($oBootstrap->getFileName())) {
                     $this->oInputImg = $oPlaceholder->setText()->get();
                 } else {
                     $this->oInputImg = $oPlaceholder->setText('Not found')->get();
                 }
 
             } else {
-                $this->oInputImg = (new Imagine())->open($filePath);
+                $this->oInputImg = (new Imagine())->open($oBootstrap->getFileRealpath());
             }
         } catch (\Exception $e) {
             if (Helper::getConfig('debug')) {
@@ -74,6 +68,24 @@ class FileHandler
         }
 
         $this->oOutputImg = $this->oInputImg->copy();
+    }
+
+    /**
+     * @param string|null $format
+     *
+     * @return string
+     */
+    public function getBlob(string $format = null): string
+    {
+        $format = $format ?? $this->oOutputImg->getImagick()->getImageFormat();
+
+
+        $this->effect();
+        $this->resize();
+        $this->rotate();
+
+        return $this->oOutputImg
+            ->get($format, $this->oParams->getQuality($format));
     }
 
     /**
@@ -106,24 +118,6 @@ class FileHandler
         }
 
         return $this->oOutputImg;
-    }
-
-    /**
-     * @param string|null $format
-     *
-     * @return string
-     */
-    public function getBlob(string $format = null): string
-    {
-        $format = $format ?? $this->oOutputImg->getImagick()->getImageFormat();
-
-
-        $this->effect();
-        $this->resize();
-        $this->rotate();
-
-        return $this->oOutputImg
-            ->get($format, $this->oParams->getQuality($format));
     }
 
     /**

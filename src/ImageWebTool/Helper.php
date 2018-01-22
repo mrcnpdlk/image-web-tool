@@ -66,7 +66,11 @@ class Helper
     }
 
     /**
+     * @param string $key
+     * @param null   $defValue
+     *
      * @return mixed
+     * @throws \Noodlehaus\Exception\EmptyDirectoryException
      */
     public static function getConfig(string $key, $defValue = null)
     {

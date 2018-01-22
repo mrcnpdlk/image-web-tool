@@ -1,7 +1,8 @@
 {
   "storage": "/path/to/directory",
   "font": "path/to/font/file",
-  "debug": false
+  "font_size": 50,
+  "debug": false,
 }
 
 

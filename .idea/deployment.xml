@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="Angular.34" autoUploadExternalChanges="true">
+  <component name="PublishConfigData" autoUpload="Always" serverName="FTP.6" autoUploadExternalChanges="true">
     <serverData>
       <paths name="Angular.34">
         <serverdata>
@@ -19,7 +19,7 @@
       <paths name="FTP.6">
         <serverdata>
           <mappings>
-            <mapping deploy="/image-chart-api" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/v1_devel" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
@@ -30,21 +30,14 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="IPTV_EPG">
+      <paths name="X">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="NMS">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="VOD.51">
+      <paths name="vod.51">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
